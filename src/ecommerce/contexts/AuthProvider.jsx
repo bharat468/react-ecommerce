@@ -7,9 +7,9 @@ const authContext = createContext();
 function authReducer(state, action) {
   switch (action.type) {
     case "LOGIN":
-      return { ...state, isLoggedIn: true };
+      return { ...state, isLoggedIn: true, user: action.payload };
     case "LOGOUT":
-      return { ...state, isLoggedIn: false };
+      return { ...state, isLoggedIn: false, user: null };
     default:
       return state;
   }
@@ -18,15 +18,16 @@ function authReducer(state, action) {
 function AuthProvider({ children }) {
   const initialState = {
     isLoggedIn: null,
+    user: null,
   };
 
   const [state, dispatch] = useReducer(authReducer, initialState);
 
   useEffect(() => {
-    // 🔥 listen to firebase auth state
+    // Listen to firebase auth
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        dispatch({ type: "LOGIN" });
+        dispatch({ type: "LOGIN", payload: user });
       } else {
         dispatch({ type: "LOGOUT" });
       }
@@ -37,15 +38,20 @@ function AuthProvider({ children }) {
 
   async function logout() {
     try {
-      await signOut(auth); // 🔥 Firebase logout
-      dispatch({ type: "LOGOUT" });
+      await signOut(auth);
     } catch (error) {
       console.log("Logout Error:", error);
     }
   }
 
   return (
-    <authContext.Provider value={{ state, logout }}>
+    <authContext.Provider
+      value={{
+        isLoggedIn: state.isLoggedIn,
+        user: state.user,
+        logout,
+      }}
+    >
       {children}
     </authContext.Provider>
   );
