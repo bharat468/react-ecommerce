@@ -11,7 +11,8 @@ const Navbar = () => {
 
   const { cart } = useCart();
   const { currency, setCurrency } = useCurrency();
-  const { user, logout } = useAuth();
+  const { user, isLoggedIn, logout } = useAuth();
+
 
 
   const [isOpen, setIsOpen] = useState(false); // mobile menu state
@@ -42,7 +43,7 @@ const Navbar = () => {
               Home
             </NavLink>
           </li>
-          
+
 
           <li>
             <NavLink
@@ -162,15 +163,15 @@ const Navbar = () => {
         </select>
 
         {/* Login / Logout */}
-        {user ? (
+        {isLoggedIn ? (
           <button
             onClick={logout}
-            className="bg-[#ffcc66] text-[#002f56] font-semibold px-4 py-2 rounded-full shadow-md"
+            className="bg-[#ffcc66] text-[#002f56] font-semibold px-4 py-2 rounded-full hover:scale-105 transition shadow-md"
           >
             Logout
           </button>
         ) : (
-          <NavLink to="/login" onClick={() => setIsOpen(false)} className="hover:text-[#ffcc66]">
+          <NavLink to="/login" className="hover:text-[#ffcc66]">
             Login
           </NavLink>
         )}
